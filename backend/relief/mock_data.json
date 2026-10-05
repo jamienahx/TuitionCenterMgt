@@ -1,0 +1,53 @@
+{
+  "teachers": [
+    {
+      "name": "Yang Yi",
+      "contact_number": "91234567",
+      "subjects": ["Mathematics", "Physics"],
+      "levels": ["Secondary 1", "Secondary 2"],
+      "availability": [
+        {
+          "day_of_week": "Monday",
+          "start_time": "09:00",
+          "end_time": "12:00"
+        },
+        {
+          "day_of_week": "Wednesday",
+          "start_time": "14:00",
+          "end_time": "18:00"
+        }
+      ]
+    },
+    {
+      "name": "Joy Zhang",
+      "contact_number": "92345678",
+      "subjects": ["English"],
+      "levels": ["Primary 5", "Primary 6"],
+      "availability": [
+        {
+          "day_of_week": "Tuesday",
+          "start_time": "10:00",
+          "end_time": "14:00"
+        }
+      ]
+    },
+    {
+      "name": "Krien Zhang",
+      "contact_number": "93456789",
+      "subjects": ["Science", "Chemistry"],
+      "levels": ["Secondary 2", "Secondary 3"],
+      "availability": [
+        {
+          "day_of_week": "Thursday",
+          "start_time": "13:00",
+          "end_time": "17:00"
+        },
+        {
+          "day_of_week": "Friday",
+          "start_time": "09:00",
+          "end_time": "13:00"
+        }
+      ]
+    }
+  ]
+}

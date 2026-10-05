@@ -21,9 +21,13 @@ class ReliefTeacher(models.Model):
 
 class Subject(models.Model):
     name = models.CharField(max_length=255, unique = True)
+    def __str__(self):
+        return self.name  #get the subject from the DB, get the string fron the object, then display the actual string in the field
 
 class Level(models.Model):
     name = models.CharField(max_length=255, unique = True)
+    def __str__(self):
+        return self.name 
 
 class TeacherAvailability(models.Model):
     teacher = models.ForeignKey(
