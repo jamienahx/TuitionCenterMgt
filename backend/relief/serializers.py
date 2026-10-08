@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ReliefTeacher, TeacherAvailability
+from .models import ReliefTeacher, TeacherAvailability, Subject, Level
 class TeacherAvailabilitySerializer (serializers.ModelSerializer):
     class Meta:
         model = TeacherAvailability
@@ -7,9 +7,18 @@ class TeacherAvailabilitySerializer (serializers.ModelSerializer):
 
 
 class ReliefTeacherSerializer (serializers.ModelSerializer):
-    subjects = serializers.StringRelatedField(many=True) #get the related subject and represent it as a string
-    levels = serializers.StringRelatedField(many=True)
+    subjects = serializers.SlugRelatedField (
+        many=True,
+        slug_field="name",
+        queryset=Subject.objects.all()
+    )#get the related subject and represent it as a string
+    levels = serializers.SlugRelatedField(
+        many=True,
+        slug_field="name",
+        queryset=Level.objects.all()
+    )
     availability = TeacherAvailabilitySerializer (many=True)
+   
     class Meta:
         model = ReliefTeacher
         fields = ["id", "name", "contact_number","subjects","levels","availability"]

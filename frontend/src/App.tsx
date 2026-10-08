@@ -29,21 +29,22 @@ const App = () => {
   return (
     <div>
     <h1 className="text-5xl font-bold text-blue-600">Relief Teacher</h1>
-<table>
-  <thead>
+<table className="w-full border-collapse">
+  <thead className="bg-gray-100">
     <tr>
-    <th>Name</th>
-    <th>Contact Number</th>
-    <th>Subjects</th>
-    <th>Levels</th>
-    <th>Day of Week</th>
-    <th>Start Time</th>
-    <th>End Time</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Name</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Contact Number</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Subjects</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Levels</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Day of Week</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">Start Time</th>
+    <th className="border border-gray-300 px-4 py-3 text-left">End Time</th>
     </tr>
   </thead>
   <tbody>
     {teachers.map((teacher)=> (
-    <tr key ={teacher.id}>
+    <tr key ={teacher.id}
+      className="border-b-2">
     <td>{teacher.name}</td>
     <td>{teacher.contact_number}</td>
     <td>
@@ -63,15 +64,26 @@ const App = () => {
     
     <td>
       {teacher.availability.map((slot,index) => (
-        <div key = {index}>
-         <p>{slot.day_of_week}</p>
-         <p>{slot.start_time}</p>
-           <p>{slot.end_time}</p>
-           </div>
-           )
+        <div key = {index}>{slot.day_of_week}</div>
           )
-        }
-        </td>
+        )
+      }
+      </td>   
+      <td>
+        {teacher.availability.map((slot,index) => (
+        <div key = {index}>{slot.start_time}</div>
+          )
+        )
+      }
+      </td>
+      <td>
+        {teacher.availability.map((slot,index) => (
+        <div key = {index}>{slot.end_time}</div>
+          )
+        )
+      }
+      </td>
+          
     </tr>
       )
     )
