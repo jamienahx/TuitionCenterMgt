@@ -17,8 +17,24 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         slug_field="name",
         queryset=Level.objects.all()
     )
-    availability = TeacherAvailabilitySerializer (many=True)
+    availability = TeacherAvailabilitySerializer (many=True, required=False)
    
     class Meta:
         model = ReliefTeacher
         fields = ["id", "name", "contact_number","subjects","levels","availability"]
+    
+    def update(self, instance, validated_data):
+        availability_data = validated_data.pop("availability",None)
+
+        instance = super().update(instance, validated_data)
+
+        if availability_data is not None:
+            instance.availability.all().delete()
+
+            for item in availability_data:
+                TeacherAvailability.objects.create(
+                    teacher=instance,
+                    **item
+                )
+
+        return instance

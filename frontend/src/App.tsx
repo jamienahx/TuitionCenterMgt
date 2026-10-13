@@ -17,6 +17,8 @@ interface Teacher {
 const App = () => {
 
   const[teachers, setTeachers] = useState<Teacher[]>([]);
+  const [editingTeacher, setEditingTeacher] = useState <Teacher | null>(null);
+
   useEffect(()=> {
     fetch("http://127.0.0.1:8000/api/teachers/")
     .then((response)=> response.json())
@@ -39,10 +41,13 @@ const App = () => {
     <th className="border border-gray-300 px-4 py-3 text-left">Day of Week</th>
     <th className="border border-gray-300 px-4 py-3 text-left">Start Time</th>
     <th className="border border-gray-300 px-4 py-3 text-left">End Time</th>
+    <th className = "border border-gray-300 px-4 py-3 text-left">Actions</th>
     </tr>
   </thead>
+  
   <tbody>
     {teachers.map((teacher)=> (
+    
     <tr key ={teacher.id}
       className="border-b-2">
     <td>{teacher.name}</td>
@@ -83,6 +88,12 @@ const App = () => {
         )
       }
       </td>
+      <td className="border border-gray-300 px-4 py-3">
+      <button
+        type="button"
+        onClick={()=> setEditingTeacher(teacher)}
+        className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">Edit</button>
+        </td>
           
     </tr>
       )
@@ -90,6 +101,14 @@ const App = () => {
   }
   </tbody>
   </table>
+
+  {editingTeacher && (
+    <div className="mt-6">
+      <h2 className="text-2xl font-bold">
+        Editing: {editingTeacher.name}
+      </h2>
+      </div>
+  )}
 </div>
 
 );
