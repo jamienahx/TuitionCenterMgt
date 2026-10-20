@@ -23,6 +23,8 @@ const TeacherPage = () => {
 
     //during the initial render the interface may be null bc it hasnt connected to the BE yet. Once the teacher object is retrieved it will render the teacher object with its attributes defined in the interface
     const [teacher, setTeacher] = useState<Teacher | null>(null);
+    const [subjectsInput, setSubjectsInput] = useState("");
+    const [levelsInput, setLevelsInput] = useState("");
      
     useEffect (() => {
         fetch("http://127.0.0.1:8000/api/teachers/")
@@ -37,6 +39,8 @@ const TeacherPage = () => {
                 (item) => item.id=== Number(teacherId)         );
 
         setTeacher(selectedTeacher ?? null);
+        setSubjectsInput(selectedTeacher?.subjects.join(", ") ?? "")
+        setLevelsInput(selectedTeacher?.levels.join(", ") ?? "")
 
         })
         .catch((error) => {
@@ -62,7 +66,102 @@ const TeacherPage = () => {
             }
             className="w-full border border-gray-300 rounded px-3 py-2"/>
             </div>
+
+            <div className="mb-4">
+                <label className="block font-medium mb-2">Contact Number</label>
+            <input type="text"
+                    value={teacher.contact_number}
+                    onChange={(e)=>
+                        setTeacher({...teacher, contact_number: e.target.value})
+            }
+            className="w-full border border-gray-300 rounded px-3 py-2"/>
             </div>
+
+            <div className="mb-4">
+                <label className="block font-medium mb-2">Subjects</label>
+            <input type="text"
+                    value={subjectsInput}
+                    onChange={(e)=> setSubjectsInput(e.target.value)}
+                       
+            
+            className="w-full border border-gray-300 rounded px-3 py-2"/>
+            </div>
+
+            <div className="mb-4">
+                <label className="block font-medium mb-2">Levels</label>
+            <input type="text"
+                    value= {levelsInput}
+                    onChange={(e)=>
+                        setLevelsInput(e.target.value)
+            }
+            className="w-full border border-gray-300 rounded px-3 py-2"/>
+            </div>
+
+            <div className="mb-4">
+                <label className="block font-medium mb-2">Availability (Day, Start Time, End Time)</label>
+                {teacher.availability.map((slot, index)=> (
+                    <div key={index} className="mb-4">
+                        <input
+                            type="text"
+                            value={slot.day_of_week}
+                            onChange={(e) => {
+                                const updatedAvailability = [...teacher.availability];
+
+                                updatedAvailability[index] = {
+                                    ...slot,
+                                    day_of_week: e.target.value
+                                };
+
+                                setTeacher({
+                                    ...teacher,
+                                    availability: updatedAvailability
+                                });
+                            }}
+
+                            className="w-full border border-gray-300 rounded px-3 py-2 mb-2"/>
+                            
+                        
+                            <input
+                            type="time"
+                            value={slot.start_time}
+                            onChange={(e) => {
+                                const updatedAvailability = [...teacher.availability];
+
+                                updatedAvailability[index] = {
+                                    ...slot,
+                                    start_time: e.target.value
+                                };
+
+                                setTeacher({
+                                    ...teacher,
+                                    availability: updatedAvailability
+                                });
+                            }}
+
+                            className="w-full border border-gray-300 rounded px-3 py-2 mb-2"/>
+
+                            <input
+                            type="time"
+                            value={slot.end_time}
+                            onChange={(e) => {
+                                const updatedAvailability = [...teacher.availability];
+
+                                updatedAvailability[index] = {
+                                    ...slot,
+                                    end_time: e.target.value
+                                };
+
+                                setTeacher({
+                                    ...teacher,
+                                    availability: updatedAvailability
+                                });
+                            }}
+
+                            className="w-full border border-gray-300 rounded px-3 py-2 mb-2"/>
+               </div>
+             ))}
+            </div>
+    </div>
     );
 };
 
