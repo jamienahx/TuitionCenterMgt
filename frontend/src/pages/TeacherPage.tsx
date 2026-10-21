@@ -48,6 +48,41 @@ const TeacherPage = () => {
         });
         }, [teacherId]);
 
+        const handleSave = async () => {
+
+            if(!teacher) return;
+
+            const updatedTeacher = {
+                ...teacher,
+                subjects: subjectsInput.split(",").map((subject)=> subject.trim()).filter(Boolean),
+                levels: levelsInput.split(",").map((level) => level.trim()).filter(Boolean)
+            }
+        
+
+        const response = await fetch (
+            `http://127.0.0.1:8000/api/teachers/${teacher.id}/`,
+            {
+                method:"PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatedTeacher)
+            }
+        );
+        
+
+        if(!response.ok){
+
+            console.error("Failed to save")
+            return;
+
+        }
+
+        const savedTeacher: Teacher = await response.json();
+        setTeacher(savedTeacher);
+        console.log("Teacher details updated");
+        };
+
         if(!teacher) {
             return <p className="p-6">Loading teacher or teacher not found</p>
 
@@ -161,6 +196,13 @@ const TeacherPage = () => {
                </div>
              ))}
             </div>
+            <button 
+
+             onClick={handleSave}
+                type="button"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Save Changes
+                </button>
     </div>
     );
 };
