@@ -1,4 +1,7 @@
 import {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom"
+
+
 
 interface Availability {
   day_of_week: string;
@@ -16,6 +19,8 @@ interface Teacher {
 }
 const App = () => {
 
+
+  const navigate = useNavigate();
   const[teachers, setTeachers] = useState<Teacher[]>([]);
   const [editingTeacher, setEditingTeacher] = useState <Teacher | null>(null);
 
@@ -91,7 +96,7 @@ const App = () => {
       <td className="border border-gray-300 px-4 py-3">
       <button
         type="button"
-        onClick={()=> setEditingTeacher(teacher)}
+        onClick={()=> navigate (`/teachers/${teacher.id}`)}
         className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">Edit</button>
         </td>
           
