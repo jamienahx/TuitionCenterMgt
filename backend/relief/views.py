@@ -40,3 +40,11 @@ def update_teacher(request,teacher_id):
         return Response(serializer.data)
     
     return Response(serializer.errors, status = 400)
+
+@api_view(["DELETE"])
+def delete_teacher(request, teacher_id):
+    teacher = get_object_or_404(ReliefTeacher, id=teacher_id) #search for the object in postgres. return if it exists if not give a 404 error
+
+    teacher.delete()
+
+    return Response(status=204)
