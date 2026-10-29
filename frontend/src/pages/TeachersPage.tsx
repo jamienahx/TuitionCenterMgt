@@ -99,6 +99,10 @@ const App = () => {
         onClick={()=> navigate (`/teachers/${teacher.id}`)}
         className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">Edit</button>
         </td>
+        <button
+          type="button"
+          className="bg-red-600  px-3 py-2 text-white hover:bg-red-700">Delete
+        </button>
           
     </tr>
       )
