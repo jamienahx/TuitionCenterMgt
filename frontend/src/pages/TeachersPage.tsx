@@ -24,6 +24,7 @@ const App = () => {
   const[teachers, setTeachers] = useState<Teacher[]>([]);
   const [editingTeacher, setEditingTeacher] = useState <Teacher | null>(null);
 
+
   useEffect(()=> {
     fetch("http://127.0.0.1:8000/api/teachers/")
     .then((response)=> response.json())
@@ -32,6 +33,36 @@ const App = () => {
       console.log(data);
     });
   }, []);
+
+  const handleDelete = async (teacherId: number) => {
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this teacher?"
+    );
+
+    if(!confirmed) {
+      return;
+    }
+    
+    const response = await fetch(
+      `http://127.0.0.1:8000/api/teachers/${teacherId}/delete/`,
+      {
+        method: "DELETE"
+      }
+
+    );
+
+    if(!response.ok) {
+      console.error("Failed to delete teacher");
+      return;
+    }
+
+    setTeachers((previousTeachers)=>
+      previousTeachers.filter((teacher) => teacher.id !==teacherId)
+  );
+  
+    console.log("Teacher deleted successfully");
+  }
 
   return (
     <div>
@@ -98,11 +129,12 @@ const App = () => {
         type="button"
         onClick={()=> navigate (`/teachers/${teacher.id}`)}
         className="rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">Edit</button>
-        </td>
+        
         <button
           type="button"
+          onClick={() => handleDelete(teacher.id)}
           className="bg-red-600  px-3 py-2 text-white hover:bg-red-700">Delete
-        </button>
+        </button></td>
           
     </tr>
       )
