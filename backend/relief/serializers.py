@@ -1,9 +1,22 @@
 from rest_framework import serializers
-from .models import ReliefTeacher, TeacherAvailability, Subject, Level
+from .models import ReliefTeacher, TeacherAvailability, Subject, Level, TeacherLevel
 class TeacherAvailabilitySerializer (serializers.ModelSerializer):
     class Meta:
         model = TeacherAvailability
         fields = ["day_of_week","start_time","end_time"]
+
+class TeacherLevelSerializer(serializers.ModelSerializer):
+    level = serializers.CharField(source="level.name",read_only=True)
+
+    subjects = serializers.SlugRelatedField(
+        many=True,
+        slug_field="name",
+        read_only=True
+    )
+
+    class Meta:
+        model = TeacherLevel
+        fields = ["level","subjects"]
 
 
 class ReliefTeacherSerializer (serializers.ModelSerializer):
@@ -16,10 +29,11 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         write_only = True
     )
     availability = TeacherAvailabilitySerializer (many=True, required=False)
-   
+    teaching_levels = TeacherLevelSerializer(many=True, read_only=True)
+
     class Meta:
         model = ReliefTeacher
-        fields = ["id", "name", "contact_number","subjects","levels","availability"]
+        fields = ["id", "name", "contact_number","subjects","levels","availability","teaching_levels"] #the json object will now return teaching_levels which contain levels and subjects at that level
 
     def to_representation(self, instance) :
         data = super().to_representation(instance)
