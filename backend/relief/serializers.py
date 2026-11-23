@@ -6,12 +6,17 @@ class TeacherAvailabilitySerializer (serializers.ModelSerializer):
         fields = ["day_of_week","start_time","end_time"]
 
 class TeacherLevelSerializer(serializers.ModelSerializer):
-    level = serializers.CharField(source="level.name",read_only=True)
+    
+    level = serializers.SlugRelatedField(
+        slug_field="name", #the api will output name field rather than the primary key (id)
+        queryset = Level.objects.all() #returns all the levels in the levels table. Objects lets you CRUD with the DB
+    )
 
     subjects = serializers.SlugRelatedField(
         many=True,
         slug_field="name",
-        read_only=True
+        queryset = Subject.objects.all(), #returns all the subjects in the subject table
+        allow_empty = False
     )
 
     class Meta:
@@ -29,7 +34,7 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         write_only = True
     )
     availability = TeacherAvailabilitySerializer (many=True, required=False)
-    teaching_levels = TeacherLevelSerializer(many=True, read_only=True)
+    teaching_levels = TeacherLevelSerializer(many=True, required=False) #previously read only = true means django will not accept or validate the field. It only returns the field. required=false means it can accept, return and validate data but the data is not required.
 
     class Meta:
         model = ReliefTeacher
@@ -46,16 +51,7 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         availability_data = validated_data.pop("availability",None)
         subjects_data = validated_data.pop("subjects",None)
         levels_data = validated_data.pop("levels",None)
-
-        instance = super().update(instance, validated_data)
-        if levels_data is not None:
-            levels =[]
-
-            for name in levels_data:
-                level, created = Level.objects.get_or_create(name=name.strip())
-                levels.append(level)
-            instance.levels.set(levels)
-               
+        teaching_levels_data = validated_data.pop("teaching_levels", None) #extracts the teaching_levels from validated_data and stores it in teaching_levels_data. Removes teaching_levels from validated_data before super().update() runs.                                                                                                                                                                                                                                                                                                                                 
             
 
 
@@ -78,5 +74,18 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
                     teacher=instance,
                     **item
                 )
+
+                if teaching_levels_data is not None:
+                    instance.teaching_levels_data.all().delete()
+
+                    for item in teaching_levels_data:
+                        level = item["level"]
+                        subjects = item["subjects"]
+
+                        teacher_level = TeacherLevel.objects.create(
+                            teacher=instance,
+                            level=level
+                        )
+                        teacher_level.subjects.set(subjects)
 
         return instance
