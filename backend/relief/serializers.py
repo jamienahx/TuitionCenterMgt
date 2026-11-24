@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import ReliefTeacher, TeacherAvailability, Subject, Level, TeacherLevel
+from django.db import transaction
+
 class TeacherAvailabilitySerializer (serializers.ModelSerializer):
     class Meta:
         model = TeacherAvailability
@@ -39,6 +41,23 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
     class Meta:
         model = ReliefTeacher
         fields = ["id", "name", "contact_number","subjects","levels","availability","teaching_levels"] #the json object will now return teaching_levels which contain levels and subjects at that level
+    
+    def validate_teaching_levels(self, value): #prevent dupes in teacher_levels because it violates the DB design of having a unique level-subject combi. Models already have it, but this is the validation layer. Value here also speciically refers to the teaching_levels, whereas validated_data typically refers to ALL fields
+
+        seen_levels = set() #a set is a list that doe not contain duplicate values and there is no insertion order
+
+        for item in value:
+
+            level = item["level"] #extract the "levels" part from the dictionary
+
+            if level in seen_levels: #check whether the level already exists
+                raise serializers.ValidationError(
+                    f"Duplicate teaching level: {level.name}"
+            )
+
+            seen_levels.add(level)
+
+        return value
 
     def to_representation(self, instance) :
         data = super().to_representation(instance)
@@ -47,12 +66,12 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
 
         return data
     
+    @transaction.atomic # transaction.atomic groups the whole transaction together and ensures that only when all operations  are successful will the DB update. if even one fails, nothing gets updated
     def update(self, instance, validated_data):
         availability_data = validated_data.pop("availability",None)
         subjects_data = validated_data.pop("subjects",None)
         levels_data = validated_data.pop("levels",None)
         teaching_levels_data = validated_data.pop("teaching_levels", None) #extracts the teaching_levels from validated_data and stores it in teaching_levels_data. Removes teaching_levels from validated_data before super().update() runs.                                                                                                                                                                                                                                                                                                                                 
-            
 
 
         if subjects_data is not None:
