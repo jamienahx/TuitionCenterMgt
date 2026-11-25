@@ -72,7 +72,16 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         subjects_data = validated_data.pop("subjects",None)
         levels_data = validated_data.pop("levels",None)
         teaching_levels_data = validated_data.pop("teaching_levels", None) #extracts the teaching_levels from validated_data and stores it in teaching_levels_data. Removes teaching_levels from validated_data before super().update() runs.                                                                                                                                                                                                                                                                                                                                 
+        
+        instance = super().update(instance, validated_data)
 
+        if levels_data is not None:
+            levels = []
+
+            for name in levels_data:
+                level, created = Level.objects.get_or_create(name=name.strip())
+                levels.append(level)
+            instance.levels.set(levels)
 
         if subjects_data is not None:
             subjects = []
@@ -83,8 +92,6 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
             
             instance.subjects.set(subjects)
            
-          
-
         if availability_data is not None:
             instance.availability.all().delete()
 
@@ -94,17 +101,17 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
                     **item
                 )
 
-                if teaching_levels_data is not None:
-                    instance.teaching_levels_data.all().delete()
+        if teaching_levels_data is not None:
+                instance.teaching_levels.all().delete()
 
-                    for item in teaching_levels_data:
-                        level = item["level"]
-                        subjects = item["subjects"]
+            for item in teaching_levels_data:
+                level = item["level"]
+                subjects = item["subjects"]
 
-                        teacher_level = TeacherLevel.objects.create(
-                            teacher=instance,
-                            level=level
-                        )
-                        teacher_level.subjects.set(subjects)
+                teacher_level = TeacherLevel.objects.create(
+                    teacher=instance,
+                    level=level
+                    )
+                teacher_level.subjects.set(subjects)
 
         return instance
