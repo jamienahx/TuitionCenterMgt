@@ -47,6 +47,18 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
         seen_levels = set() #a set is a list that doe not contain duplicate values and there is no insertion order
 
         for item in value:
+            
+
+            if not item.get("level"):
+
+                 raise serializers.ValidationError(
+                    f"Empty level found"
+                    )
+
+            if not item.get("subjects"):
+                     raise serializers.ValidationError(
+                    f"Empty subjects found"
+                    )
 
             level = item["level"] #extract the "levels" part from the dictionary
 
@@ -56,6 +68,8 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
             )
 
             seen_levels.add(level)
+
+       
 
         return value
 
@@ -102,7 +116,7 @@ class ReliefTeacherSerializer (serializers.ModelSerializer):
                 )
 
         if teaching_levels_data is not None:
-                instance.teaching_levels.all().delete()
+            instance.teaching_levels.all().delete()
 
             for item in teaching_levels_data:
                 level = item["level"]
